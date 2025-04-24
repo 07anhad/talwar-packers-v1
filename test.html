@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipper/Carton Cost Calculator by Talwar Packers (detailed version)</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { display: flex; gap: 40px; flex-wrap: wrap; }
+        .column { flex: 1; min-width: 250px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; width: 50%; }
+        input.input-field, select.input-field { background-color: #e0f7e0; width: 100%; box-sizing: border-box; }
+        /* Hide number input spinners */
+        input.input-field::-webkit-outer-spin-button,
+        input.input-field::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input.input-field[type=number] { -moz-appearance: textfield; }
+        td.output { background-color: #f9f9f9; }
+        button { margin-top: 20px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        .footer {margin-top: 40px; font-size: 16px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <h2>Shipper/Carton Cost Calculator by Talwar Packers (detailed version)</h2>
+    <div class="container">
+        <div class="column">
+            <table>
+                <tbody>
+                    <tr><th>Ply</th><td><input id="ply" class="input-field" type="number" step="any"></td></tr>
+                    <tr><th>L (inch)</th><td><input id="length" class="input-field" type="number" step="any"></td></tr>
+                    <tr><th>W (inch)</th><td><input id="width" class="input-field" type="number" step="any"></td></tr>
+                    <tr><th>H (inch)</th><td><input id="height" class="input-field" type="number" step="any"></td></tr>
+                    <tr><th>GSM Ply 1</th><td><input id="gsm1" class="input-field" type="number" step="any"></td></tr>
+                    <tr><th>GSM Ply 2</th><td><input id="gsm2" class="input-field" type="number" step="any"></td></tr>
+                    <tr><th>GSM Ply 3</th><td><input id="gsm3" class="input-field" type="number" step="any"></td></tr>
+                    <tr><th>GSM Ply 4</th><td><input id="gsm4" class="input-field" type="number" step="any"></td></tr>
+                    <tr><th>GSM Ply 5</th><td><input id="gsm5" class="input-field" type="number" step="any"></td></tr>
+                    <tr><th>Paper Price</th><td><input id="paperCost" class="input-field" type="number" step="any"></td></tr>
+                    <tr>
+                        <th>Printing (No. of Colours)</th>
+                        <td>
+                            <select id="printing" class="input-field">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="column">
+            <table>
+                <tbody>
+                    <tr><th>Paper Size (sqm)</th><td id="paperSize" class="output"></td></tr>
+                    <tr><th>Cost Ply 1</th><td id="costPly1" class="output"></td></tr>
+                    <tr><th>Cost Ply 2</th><td id="costPly2" class="output"></td></tr>
+                    <tr><th>Cost Ply 3</th><td id="costPly3" class="output"></td></tr>
+                    <tr><th>Cost Ply 4</th><td id="costPly4" class="output"></td></tr>
+                    <tr><th>Cost Ply 5</th><td id="costPly5" class="output"></td></tr>
+                    <tr><th>Paper Cost Total</th><td id="paperCostTotal" class="output"></td></tr>
+                    <tr><th>Conversion 25%</th><td id="conversion" class="output"></td></tr>
+                    <tr><th>Wastage 3%</th><td id="wastage" class="output"></td></tr>
+                    <tr><th>Gr Total</th><td id="grTotal" class="output"></td></tr>
+                    <tr><th>Freight 3%</th><td id="freight" class="output"></td></tr>
+                    <tr><th>Profit 15%</th><td id="profit" class="output"></td></tr>
+                    <tr><th>Final Cost</th><td id="finalCost" class="output"></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <button onclick="calculate()">Calculate</button>
+
+    <div class="footer">
+        <h3>Business Details</h3>
+        <p><strong>Company’s Name:</strong> Talwar Packers</p>
+        <p><strong>Location:</strong> New Delhi</p>
+        <p><strong>Proprietor’s Name:</strong> Mr. Rishi Talwar</p>
+        <p><strong>Proprietor’s Contact Details:</strong><br>9810189535, 9212609535</p>
+    </div>
+
+    <script>
+    function calculate() {
+        const ply = parseFloat(document.getElementById('ply').value) || 0;
+        const length = parseFloat(document.getElementById('length').value) || 0;
+        const width = parseFloat(document.getElementById('width').value) || 0;
+        const height = parseFloat(document.getElementById('height').value) || 0;
+        const gsm1 = parseFloat(document.getElementById('gsm1').value) || 0;
+        const gsm2 = parseFloat(document.getElementById('gsm2').value) || 0;
+        const gsm3 = parseFloat(document.getElementById('gsm3').value) || 0;
+        const gsm4 = parseFloat(document.getElementById('gsm4').value) || 0;
+        const gsm5 = parseFloat(document.getElementById('gsm5').value) || 0;
+        const paperCost = parseFloat(document.getElementById('paperCost').value) || 0;
+        const printing = parseFloat(document.getElementById('printing').value) || 0;
+
+        const paperSize = (width + height + 1) * (length + width + 2) * 2 / 1550;
+        const costPly1 = (paperSize * gsm1 / 1000) * paperCost;
+        const costPly2 = (paperSize * gsm2 * 1.5 / 1000) * paperCost;
+        const costPly3 = (paperSize * gsm3 / 1000) * paperCost;
+        const costPly4 = (paperSize * gsm4 / 1000) * paperCost * 1.5;
+        const costPly5 = (paperSize * gsm5 / 1000) * paperCost;
+
+        const paperCostTotal = costPly1 + costPly2 + costPly3 + costPly4 + costPly5;
+        const conversion = paperCostTotal * 0.25;
+        const wastage = (paperCostTotal + conversion) * 0.03;
+        const grTotal = paperCostTotal + conversion + wastage + printing;
+        const freight = grTotal * 0.03;
+        const profit = (grTotal + freight) * 0.15;
+        const finalCost = grTotal + freight + profit;
+
+        document.getElementById('paperSize').innerText = paperSize.toFixed(6);
+        document.getElementById('costPly1').innerText = costPly1.toFixed(6);
+        document.getElementById('costPly2').innerText = costPly2.toFixed(6);
+        document.getElementById('costPly3').innerText = costPly3.toFixed(6);
+        document.getElementById('costPly4').innerText = costPly4.toFixed(6);
+        document.getElementById('costPly5').innerText = costPly5.toFixed(6);
+        document.getElementById('paperCostTotal').innerText = paperCostTotal.toFixed(6);
+        document.getElementById('conversion').innerText = conversion.toFixed(6);
+        document.getElementById('wastage').innerText = wastage.toFixed(6);
+        document.getElementById('grTotal').innerText = grTotal.toFixed(6);
+        document.getElementById('freight').innerText = freight.toFixed(6);
+        document.getElementById('profit').innerText = profit.toFixed(6);
+        document.getElementById('finalCost').innerText = finalCost.toFixed(2);
+    }
+    </script>
+</body>
+</html>
